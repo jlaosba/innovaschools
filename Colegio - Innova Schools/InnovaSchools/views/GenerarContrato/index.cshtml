@@ -1,0 +1,108 @@
+﻿@model InnovaSchools.Models.GenerarContratoViewModel
+
+@using PagedList.Mvc;
+@using InnovaSchools.Util
+
+@{
+    ViewBag.Title = "Generar Contrato";
+}
+<div class="jumbotron">
+    <h4>GENERAR CONTRATO</h4>
+    <hr />
+    <form class="form-horizontal">
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Candidato.Persona.documentoIdentidad, htmlAttributes: new { @class = "control-label", @style = "width:170px;" })
+                @Html.TextBoxFor(x => x.Candidato.Persona.documentoIdentidad, new { @id = "txtDocumentoIdentidad", @class = "form-control input-sm", @style = "width:175px;", @maxlength = "8" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Candidato.Persona.nombre, htmlAttributes: new { @class = "control-label", @style = "width:200px;" })
+                @Html.TextBoxFor(x => x.Candidato.Persona.nombre, new { @id = "txtNombre", @class = "form-control input-sm", @style = "width:175px;", @maxlength = "15" })
+            </div>
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Candidato.Persona.apellidoPaterno, htmlAttributes: new { @class = "control-label", @style = "width:170px;" })
+                @Html.TextBoxFor(x => x.Candidato.Persona.apellidoPaterno, new { @id = "txtApPaterno", @class = "form-control input-sm", @style = "width:175px;", @maxlength = "30" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Candidato.Persona.apellidoMaterno, htmlAttributes: new { @class = "control-label", @style = "width:200px;" })
+                @Html.TextBoxFor(x => x.Candidato.Persona.apellidoMaterno, new { @id = "txtApMaterno", @class = "form-control input-sm", @style = "width:175px;", @maxlength = "30" })
+            </div>
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="form-group">
+                @Html.Label("Puesto", htmlAttributes: new { @id = "ddlPuesto", @class = "control-label", @style = "width:170px;" })
+                @Html.DropDownListFor(m => m.SelectedPuestoId, new SelectList(Model.Puestos, "Value", "Text", "0"), "--Seleccionar--", new { @class = "form-control input-sm", @style = "width:175px;" })
+                @Html.ValidationMessageFor(m => m.SelectedPuestoId)
+            </div>
+            <div class="form-group">
+            </div>
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="form-inline">
+            <div class="form-group">
+            </div>
+            <div class="form-group">
+                @Html.Label(" ", htmlAttributes: new { @class = "control-label", @style = "width:195px;" })
+                <input type="button" id="btn-buscar" value="Buscar" class="btn btn-primary btn-sm" />
+            </div>
+            <div class="form-group">
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="form-horizontal">
+    <div class="form-group" id="divIndexDetail">
+        @Html.Partial("_lstGenerarContrato")
+    </div>
+</div>
+
+@section Scripts {
+   <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="~/Scripts/jquery.maskedinput.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            
+        });
+
+        $("#btn-buscar").on("click", function () {
+            var vDni = $('#txtDocumentoIdentidad').val();
+            var vNombre = $('#txtNombre').val();
+            var vApePaterno = $('#txtApPaterno').val();
+            var vApeMaterno = $('#txtApMaterno').val();
+
+            var vPuestoVal = '1'; //$('#SelectedPuestoId').val();
+            //if (vPuestoVal == 0) {
+            //    WarningMessage("Debe seleccionar un puesto");
+            //    return;
+            //}
+            vPuestoVal = vPuestoVal !== "" ? parseInt(vPuestoVal) : 0;
+
+            $('#txtDocumentoIdentidad').val('');
+            $('#txtNombre').val('');
+            $('#txtApPaterno').val('');
+            $('#txtApMaterno').val('');
+            $('#SelectedPuestoId').val('');
+
+            $.ajax({
+                url: "/GenerarContrato/lstCandidatos",
+                data: { 'pDocumentoIdentidad': vDni, 'pNombre': vNombre, 'pApePaterno': vApePaterno, 'pApeMaterno': vApeMaterno, 'pIdPuesto': vPuestoVal },
+                async: false,
+                success: function (data) {
+                    $("#divIndexDetail").html(data);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                }
+            });
+        });
+    </script>   
+}
